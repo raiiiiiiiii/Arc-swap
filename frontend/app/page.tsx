@@ -15,20 +15,7 @@ export default function Home() {
 
       <SwapCard />
 
-      <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6 text-center max-w-4xl mx-auto opacity-70">
-        <div className="p-4">
-          <div className="font-bold text-xl mb-2 text-foreground">Zero Slippage</div>
-          <p className="text-sm text-muted-foreground">Fixed 1:1 exchange rate guaranteed by the smart contract reserves.</p>
-        </div>
-        <div className="p-4">
-          <div className="font-bold text-xl mb-2 text-foreground">Native Gas</div>
-          <p className="text-sm text-muted-foreground">Powered by Arc Testnet using USDC as the native gas token.</p>
-        </div>
-        <div className="p-4">
-          <div className="font-bold text-xl mb-2 text-foreground">Highly Secure</div>
-          <p className="text-sm text-muted-foreground">Secured by OpenZeppelin contracts with daily limits and re-entrancy guards.</p>
-        </div>
-      </div>
+
     </div>
   );
 }

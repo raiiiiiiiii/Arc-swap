@@ -22,9 +22,18 @@ export function SwapCard() {
   const tokenIn = isUsdcToEurc ? TOKENS.USDC : TOKENS.EURC;
   const tokenOut = isUsdcToEurc ? TOKENS.EURC : TOKENS.USDC;
 
-  // Read User Balance
+  // Read User Balance (token in)
   const { data: balance, refetch: refetchBalance } = useReadContract({
     address: tokenIn.address,
+    abi: ERC20_ABI,
+    functionName: "balanceOf",
+    args: address ? [address] : undefined,
+    query: { enabled: !!address, refetchInterval: 5000 }
+  });
+
+  // Read User Balance (token out)
+  const { data: balanceOut } = useReadContract({
+    address: tokenOut.address,
     abi: ERC20_ABI,
     functionName: "balanceOf",
     args: address ? [address] : undefined,
@@ -112,7 +121,7 @@ export function SwapCard() {
               <span className="text-muted-foreground font-medium text-sm">Sell</span>
               {address && (
                 <div className="text-xs font-semibold text-primary bg-primary/10 px-2 py-1 rounded-full flex items-center gap-1">
-                  🦊 {formatAddress(address)}
+                  <img src="/metamask-fox.svg" alt="MetaMask" className="w-4 h-4" /> {formatAddress(address)}
                 </div>
               )}
             </div>
@@ -165,7 +174,7 @@ export function SwapCard() {
               <span className="text-muted-foreground font-medium text-sm">Buy</span>
               {address && (
                 <div className="text-xs font-semibold text-primary bg-primary/10 px-2 py-1 rounded-full flex items-center gap-1">
-                  🦊 {formatAddress(address)}
+                  <img src="/metamask-fox.svg" alt="MetaMask" className="w-4 h-4" /> {formatAddress(address)}
                 </div>
               )}
             </div>
@@ -186,7 +195,7 @@ export function SwapCard() {
 
             <div className="flex justify-between items-center text-xs font-medium text-muted-foreground mt-2">
               <span>$0.00</span>
-              <span>Pool Liquidity: {formatDecimals(currentReserve)}</span>
+              <span>Balance: {formatDecimals(balanceOut)}</span>
             </div>
           </div>
 
