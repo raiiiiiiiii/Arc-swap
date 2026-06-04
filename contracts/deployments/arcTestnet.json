@@ -1,0 +1,11 @@
+{
+  "network": "arcTestnet",
+  "chainId": 5042002,
+  "contractAddress": "0x7A86C22Cf888b4375609f5E940B2aedeb743D7A2",
+  "deployer": "0x443a28069601710a8d6Cb45722bAeaFf3aAA4bd6",
+  "usdc": "0x3600000000000000000000000000000000000000",
+  "eurc": "0x89B50855Aa3bE2F677cD6303Cec089B5F319D72a",
+  "dailySwapLimit": 3,
+  "maxSwapAmount": 1000000,
+  "deployedAt": "2026-06-04T08:39:43.847Z"
+}
