@@ -5,16 +5,39 @@ import { useEffect, useState } from "react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { Moon, Sun, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Sidebar } from "./Sidebar"; // Mobile support
+import { Sidebar } from "./Sidebar";
+import { usePublicClient } from "wagmi";
 
 export function Header() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  // BUG FIX: Real gas price from chain instead of hardcoded "20.4 Gwei"
+  const [gasPrice, setGasPrice] = useState<string | null>(null);
+  const publicClient = usePublicClient();
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (!publicClient) return;
+
+    const fetchGasPrice = async () => {
+      try {
+        const price = await publicClient.getGasPrice();
+        // Convert from wei to Gwei (1 Gwei = 1e9 wei)
+        const gwei = Number(price) / 1e9;
+        setGasPrice(gwei < 1 ? gwei.toFixed(3) : gwei.toFixed(1));
+      } catch {
+        setGasPrice(null);
+      }
+    };
+
+    fetchGasPrice();
+    const interval = setInterval(fetchGasPrice, 15000); // refresh every 15s
+    return () => clearInterval(interval);
+  }, [publicClient]);
 
   return (
     <>
@@ -29,10 +52,18 @@ export function Header() {
               </Button>
             </div>
 
-            {/* Gas Info (Simulated) */}
+            {/* Gas Info — real price from chain */}
             <div className="hidden sm:flex items-center gap-2 text-sm font-medium text-muted-foreground">
               <span className="opacity-70">GAS:</span>
-              <span className="text-blue-500 font-space-grotesk font-bold">20.4 Gwei</span>
+              {gasPrice !== null ? (
+                <span className="text-blue-500 font-space-grotesk font-bold">
+                  {gasPrice} Gwei
+                </span>
+              ) : (
+                <span className="text-muted-foreground font-space-grotesk animate-pulse">
+                  —
+                </span>
+              )}
             </div>
           </div>
 
@@ -73,16 +104,13 @@ export function Header() {
             </Button>
           </div>
           <div className="flex-1 overflow-y-auto">
-            {/* We wrap Sidebar in a div that handles clicks to close the menu on navigation */}
             <div onClick={(e) => {
-              // Close if a link is clicked
               if ((e.target as HTMLElement).closest('a')) {
                 setIsMobileMenuOpen(false);
               }
             }}>
-              {/* Force Sidebar to be visible on mobile for this overlay by overriding its hidden class */}
-              <div className="[&>aside]:flex [&>aside]:w-full [&>aside]:border-none">
-                <Sidebar />
+              <div className="flex-1 w-full">
+                <Sidebar className="!flex w-full border-none" />
               </div>
             </div>
           </div>

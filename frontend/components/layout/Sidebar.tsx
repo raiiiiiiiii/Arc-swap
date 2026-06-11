@@ -2,14 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowLeftRight, ShieldCheck, Droplets, ExternalLink, Activity } from "lucide-react";
+import { ArrowLeftRight, ShieldCheck, Droplets, ExternalLink, Activity, Waves } from "lucide-react";
 import Image from "next/image";
 
-export function Sidebar() {
+export function Sidebar({ className }: { className?: string }) {
   const pathname = usePathname();
 
   return (
-    <aside className="w-64 h-full border-r bg-background flex flex-col hidden md:flex shrink-0">
+    <aside className={`w-64 h-full border-r bg-background flex flex-col shrink-0 ${className || "hidden md:flex"}`}>
       {/* Logo Section */}
       <div className="h-16 flex items-center px-6 border-b shrink-0">
         <Link href="/" className="flex items-center gap-2">
@@ -34,6 +34,18 @@ export function Sidebar() {
             <span>Swap Tokens</span>
           </Link>
           
+          <Link
+            href="/pools"
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+              pathname === "/pools"
+                ? "bg-primary text-primary-foreground shadow-md"
+                : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+            }`}
+          >
+            <Waves className="w-4 h-4" />
+            <span>Liquidity Pools</span>
+          </Link>
+
           <Link
             href="/admin"
             className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
