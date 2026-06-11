@@ -63,7 +63,7 @@ export function Sidebar({ className }: { className?: string }) {
         <div className="space-y-2">
           <p className="text-xs font-semibold text-muted-foreground px-2 uppercase tracking-wider mb-2">Resources</p>
           <a
-            href="https://testnet.arcscan.app/"
+            href="https://faucet.circle.com/"
             target="_blank"
             rel="noreferrer"
             className="flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-all group"
@@ -74,6 +74,7 @@ export function Sidebar({ className }: { className?: string }) {
             </div>
             <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
           </a>
+
           
           <a
             href="https://testnet.arcscan.app/"
