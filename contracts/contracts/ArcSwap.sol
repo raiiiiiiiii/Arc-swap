@@ -395,20 +395,46 @@ contract ArcSwap is Ownable, AccessControl, ReentrancyGuard, Pausable {
     function submitHighScore(uint256 score) external whenNotPaused {
         if (score == 0) revert InvalidAmount();
         
-        if (score > highScores[msg.sender]) {
-            highScores[msg.sender] = score;
+        // Only update if it's a new personal high score
+        if (score <= highScores[msg.sender]) {
+            return;
         }
+        
+        highScores[msg.sender] = score;
 
-        // Insert into Top 50 if applicable
+        // Find if player already exists in topScores and store their index
+        uint256 existingIndex = 50; 
         for (uint256 i = 0; i < 50; i++) {
-            if (score > topScores[i].score) {
-                // Shift remaining scores down
-                for (uint256 j = 49; j > i; j--) {
-                    topScores[j] = topScores[j - 1];
-                }
-                topScores[i] = PlayerScore(msg.sender, score);
+            if (topScores[i].player == msg.sender) {
+                existingIndex = i;
                 break;
             }
+        }
+
+        // Find insert position for new score
+        uint256 insertIndex = 50;
+        for (uint256 i = 0; i < 50; i++) {
+            if (score > topScores[i].score) {
+                insertIndex = i;
+                break;
+            }
+        }
+
+        // If the score is high enough to be on the board
+        if (insertIndex < 50) {
+            if (existingIndex < 50) {
+                // Player was already on board. Shift from existingIndex down to insertIndex
+                for (uint256 j = existingIndex; j > insertIndex; j--) {
+                    topScores[j] = topScores[j - 1];
+                }
+            } else {
+                // Player was not on board. Shift everything down to make room
+                for (uint256 j = 49; j > insertIndex; j--) {
+                    topScores[j] = topScores[j - 1];
+                }
+            }
+            // Insert the new score
+            topScores[insertIndex] = PlayerScore(msg.sender, score);
         }
 
         emit HighScoreSubmitted(msg.sender, score);
