@@ -3,7 +3,11 @@
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Trophy, Clock, Zap } from "lucide-react";
+import { Trophy, Clock, Zap, Upload } from "lucide-react";
+import { useAccount, useReadContract, useWriteContract } from "wagmi";
+import { ARCSWAP_ABI } from "@/lib/abis";
+import { ARCSWAP_ADDRESS } from "@/lib/constants";
+import { toast } from "@/components/ui/use-toast";
 
 export default function PlayPage() {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -13,6 +17,46 @@ export default function PlayPage() {
   // Array of 9 holes. Value is either "bear", "bull", "hit", or null
   const [holes, setHoles] = useState<(string | null)[]>(Array(9).fill(null));
   const gameInterval = useRef<NodeJS.Timeout | null>(null);
+
+  const { address, isConnected } = useAccount();
+  const { writeContractAsync, isPending } = useWriteContract();
+
+  const { data: topScores, refetch } = useReadContract({
+    address: ARCSWAP_ADDRESS,
+    abi: ARCSWAP_ABI,
+    functionName: "getTopScores",
+    query: { refetchInterval: 10000 }
+  });
+
+  const { data: myHighScore } = useReadContract({
+    address: ARCSWAP_ADDRESS,
+    abi: ARCSWAP_ABI,
+    functionName: "highScores",
+    args: address ? [address] : undefined,
+    query: { enabled: !!address, refetchInterval: 10000 }
+  });
+
+  const submitScore = async () => {
+    if (!isConnected) {
+      toast({ title: "Please connect wallet", variant: "destructive" });
+      return;
+    }
+    if (score === 0) {
+      toast({ title: "Score is 0", description: "Play a game first!", variant: "destructive" });
+      return;
+    }
+    try {
+      const tx = await writeContractAsync({
+        address: ARCSWAP_ADDRESS,
+        abi: ARCSWAP_ABI,
+        functionName: "submitHighScore",
+        args: [BigInt(score)]
+      });
+      toast({ title: "Score Submitted!", description: "Transaction is processing." });
+    } catch (e: any) {
+      toast({ title: "Error", description: e.message, variant: "destructive" });
+    }
+  };
 
   const startGame = () => {
     setIsPlaying(true);
@@ -127,10 +171,23 @@ export default function PlayPage() {
 
           {/* Overlays */}
           {!isPlaying && timeLeft === 0 && (
-            <div className="absolute inset-0 bg-background/95 backdrop-blur-sm flex flex-col items-center justify-center z-10">
+            <div className="absolute inset-0 bg-background/95 backdrop-blur-sm flex flex-col items-center justify-center z-10 p-6 text-center">
               <h2 className="text-4xl font-bold mb-2 font-space-grotesk">Game Over!</h2>
               <p className="text-xl text-muted-foreground mb-8">Final Score: <span className="text-primary font-bold">{score}</span></p>
-              <Button size="lg" onClick={startGame} className="font-bold text-lg px-8 rounded-full h-14">Play Again</Button>
+              
+              <div className="flex flex-col gap-3 w-full max-w-xs">
+                <Button size="lg" onClick={startGame} className="font-bold text-lg rounded-full h-12">Play Again</Button>
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  onClick={submitScore} 
+                  disabled={isPending || score === 0}
+                  className="font-bold border-primary text-primary hover:bg-primary/10 rounded-full h-12 flex items-center gap-2"
+                >
+                  <Upload className="w-4 h-4" />
+                  {isPending ? "Submitting..." : "Submit to Web3"}
+                </Button>
+              </div>
             </div>
           )}
 
@@ -164,6 +221,39 @@ export default function PlayPage() {
             ))}
           </div>
         </Card>
+
+        {/* Leaderboard Section */}
+        <div className="w-full max-w-md bg-secondary/20 rounded-xl p-6 border border-border/30">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-bold flex items-center gap-2">
+              <Trophy className="text-amber-500 w-5 h-5" /> Global Top 10
+            </h3>
+            {myHighScore !== undefined && (
+              <span className="text-sm text-muted-foreground">My Best: <strong className="text-foreground">{Number(myHighScore)}</strong></span>
+            )}
+          </div>
+          
+          <div className="space-y-2">
+            {topScores && (topScores as any[]).map((entry: any, i: number) => {
+              if (Number(entry.score) === 0) return null;
+              return (
+                <div key={i} className="flex justify-between items-center p-3 rounded-lg bg-background/50 border border-border/50">
+                  <div className="flex items-center gap-3">
+                    <span className="text-muted-foreground text-sm font-bold w-4">{i + 1}.</span>
+                    <span className="font-mono text-sm">{entry.player.slice(0,6)}...{entry.player.slice(-4)}</span>
+                  </div>
+                  <span className="font-bold text-primary">{Number(entry.score)}</span>
+                </div>
+              );
+            })}
+            {(!topScores || (topScores as any[])[0]?.score === 0n) && (
+              <p className="text-muted-foreground text-sm text-center py-6 border border-dashed rounded-lg border-border/50">
+                No scores yet. Be the first to conquer the bears!
+              </p>
+            )}
+          </div>
+        </div>
+
       </div>
     </div>
   );

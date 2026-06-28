@@ -59,6 +59,14 @@ contract ArcSwap is Ownable, AccessControl, ReentrancyGuard, Pausable {
     uint256 public totalLpProviders;
     mapping(address => bool) public hasProvidedLiquidity;
 
+    // ─── Mini Game Leaderboard ───────────────────────────────────────────────
+    struct PlayerScore {
+        address player;
+        uint256 score;
+    }
+    mapping(address => uint256) public highScores;
+    PlayerScore[10] public topScores;
+
     // ─── Custom Errors ───────────────────────────────────────────────────────
     error InvalidToken(address token);
     error InvalidAmount();
@@ -88,6 +96,7 @@ contract ArcSwap is Ownable, AccessControl, ReentrancyGuard, Pausable {
     event MaxSwapAmountUpdated(uint256 oldAmount, uint256 newAmount);
     event AdminRoleGranted(address indexed admin, address indexed account);
     event AdminRoleRevoked(address indexed admin, address indexed account);
+    event HighScoreSubmitted(address indexed player, uint256 score);
 
     // ─── Constructor ─────────────────────────────────────────────────────────
     constructor(
@@ -380,6 +389,33 @@ contract ArcSwap is Ownable, AccessControl, ReentrancyGuard, Pausable {
 
     function unpause() external onlyAdmin {
         _unpause();
+    }
+
+    // ─── Leaderboard Functions ───────────────────────────────────────────────
+    function submitHighScore(uint256 score) external whenNotPaused {
+        if (score == 0) revert InvalidAmount();
+        
+        if (score > highScores[msg.sender]) {
+            highScores[msg.sender] = score;
+        }
+
+        // Insert into Top 10 if applicable
+        for (uint256 i = 0; i < 10; i++) {
+            if (score > topScores[i].score) {
+                // Shift remaining scores down
+                for (uint256 j = 9; j > i; j--) {
+                    topScores[j] = topScores[j - 1];
+                }
+                topScores[i] = PlayerScore(msg.sender, score);
+                break;
+            }
+        }
+
+        emit HighScoreSubmitted(msg.sender, score);
+    }
+
+    function getTopScores() external view returns (PlayerScore[10] memory) {
+        return topScores;
     }
 
     function supportsInterface(bytes4 interfaceId)

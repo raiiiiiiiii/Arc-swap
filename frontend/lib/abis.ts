@@ -21,6 +21,11 @@ export const ARCSWAP_ABI = parseAbi([
   "function totalLpProviders() external view returns (uint256)",
   "function lpUSDC(address) external view returns (uint256)",
   "function lpEURC(address) external view returns (uint256)",
+  
+  // ── Leaderboard ───────────────────────────────────────────────────────────
+  "function submitHighScore(uint256 score) external",
+  "function getTopScores() external view returns (tuple(address player, uint256 score)[10])",
+  "function highScores(address) external view returns (uint256)",
 
   // ── Admin ─────────────────────────────────────────────────────────────────
   "function depositLiquidity(address token, uint256 amount) external",
@@ -35,6 +40,7 @@ export const ARCSWAP_ABI = parseAbi([
   "event Swapped(address indexed user, address indexed tokenIn, address indexed tokenOut, uint256 amountIn, uint256 amountOut, uint256 timestamp)",
   "event PublicLiquidityAdded(address indexed provider, address indexed token, uint256 amount)",
   "event PublicLiquidityRemoved(address indexed provider, address indexed token, uint256 amount)",
+  "event HighScoreSubmitted(address indexed player, uint256 score)",
 ]);
 
 export const ERC20_ABI = parseAbi([
