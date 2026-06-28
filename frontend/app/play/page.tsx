@@ -138,8 +138,14 @@ export default function PlayPage() {
   };
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center p-6 lg:p-12 h-full overflow-y-auto">
-      <div className="max-w-2xl w-full flex flex-col items-center gap-8">
+    <div className="flex-1 flex flex-col items-center justify-center p-6 lg:p-12 h-full overflow-y-auto relative">
+      {/* Animated Glowing Background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-[100px] animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-[30rem] h-[30rem] bg-amber-500/10 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '1s' }} />
+      </div>
+
+      <div className="max-w-2xl w-full flex flex-col items-center gap-8 relative z-10">
         <div className="text-center space-y-4 mt-8">
           <h1 className="text-4xl font-space-grotesk font-bold tracking-tight text-white flex items-center justify-center gap-3">
             <Zap className="text-primary w-8 h-8" />
@@ -150,7 +156,7 @@ export default function PlayPage() {
           </p>
         </div>
 
-        <Card className="w-full max-w-md p-6 bg-secondary/30 backdrop-blur-md border-border/50 shadow-2xl relative overflow-hidden mb-8">
+        <Card className="w-full max-w-md p-6 bg-black/40 backdrop-blur-xl border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)] relative overflow-hidden mb-4 rounded-3xl">
           
           <div className="flex justify-between items-center mb-8 px-4">
             <div className="flex flex-col items-center">
@@ -204,15 +210,15 @@ export default function PlayPage() {
                 key={index}
                 onClick={() => hitHole(index)}
                 className={`
-                  aspect-square rounded-2xl border-4 flex items-center justify-center text-4xl md:text-5xl cursor-pointer
-                  transition-all duration-150 transform select-none overflow-hidden
-                  ${hole === null ? 'bg-background/50 border-border/20 shadow-inner' : ''}
-                  ${hole === 'bear' ? 'bg-red-500/10 border-red-500/30 hover:bg-red-500/20 scale-[1.02] active:scale-95 shadow-[0_0_15px_rgba(239,68,68,0.2)]' : ''}
-                  ${hole === 'bull' ? 'bg-green-500/10 border-green-500/30 hover:bg-green-500/20 scale-[1.02] active:scale-95 shadow-[0_0_15px_rgba(34,197,94,0.2)]' : ''}
-                  ${hole === 'hit' ? 'bg-yellow-500/20 border-yellow-500/50 scale-95 opacity-50' : ''}
+                  aspect-square rounded-3xl border flex items-center justify-center text-5xl md:text-6xl cursor-pointer
+                  transition-all duration-200 transform select-none overflow-hidden
+                  ${hole === null ? 'bg-black/60 border-white/5 shadow-[inset_0_10px_20px_rgba(0,0,0,0.8)]' : ''}
+                  ${hole === 'bear' ? 'bg-red-500/20 border-red-500/50 hover:bg-red-500/30 scale-[1.05] active:scale-90 shadow-[0_0_30px_rgba(239,68,68,0.4),inset_0_0_20px_rgba(239,68,68,0.2)]' : ''}
+                  ${hole === 'bull' ? 'bg-green-500/20 border-green-500/50 hover:bg-green-500/30 scale-[1.05] active:scale-90 shadow-[0_0_30px_rgba(34,197,94,0.4),inset_0_0_20px_rgba(34,197,94,0.2)]' : ''}
+                  ${hole === 'hit' ? 'bg-yellow-500/30 border-yellow-500 scale-75 opacity-70 rotate-12' : ''}
                 `}
               >
-                <div className={`transition-transform duration-200 ${hole === null ? 'translate-y-full opacity-0' : 'translate-y-0 opacity-100'}`}>
+                <div className={`transition-transform duration-300 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] ${hole === null ? 'translate-y-full opacity-0' : 'translate-y-0 opacity-100'}`}>
                   {hole === "bear" && "🐻"}
                   {hole === "bull" && "🐂"}
                   {hole === "hit" && "💥"}
@@ -223,31 +229,37 @@ export default function PlayPage() {
         </Card>
 
         {/* Leaderboard Section */}
-        <div className="w-full max-w-md bg-secondary/20 rounded-xl p-6 border border-border/30">
-          <div className="flex justify-between items-center mb-4">
+        <div className="w-full max-w-md bg-black/40 backdrop-blur-xl rounded-3xl p-6 border border-white/10 shadow-[0_0_30px_rgba(0,0,0,0.3)]">
+          <div className="flex justify-between items-center mb-6">
             <h3 className="text-xl font-bold flex items-center gap-2">
-              <Trophy className="text-amber-500 w-5 h-5" /> Global Top 10
+              <Trophy className="text-amber-500 w-5 h-5 drop-shadow-[0_0_5px_rgba(245,158,11,0.8)]" /> Global Top 10
             </h3>
             {myHighScore !== undefined && (
-              <span className="text-sm text-muted-foreground">My Best: <strong className="text-foreground">{Number(myHighScore)}</strong></span>
+              <span className="text-sm text-muted-foreground bg-white/5 px-3 py-1 rounded-full border border-white/10">My Best: <strong className="text-primary">{Number(myHighScore)}</strong></span>
             )}
           </div>
           
-          <div className="space-y-2">
+          <div className="space-y-3">
             {topScores && (topScores as any[]).map((entry: any, i: number) => {
               if (Number(entry.score) === 0) return null;
+              
+              let medal = "";
+              if (i === 0) medal = "🥇";
+              else if (i === 1) medal = "🥈";
+              else if (i === 2) medal = "🥉";
+
               return (
-                <div key={i} className="flex justify-between items-center p-3 rounded-lg bg-background/50 border border-border/50">
-                  <div className="flex items-center gap-3">
-                    <span className="text-muted-foreground text-sm font-bold w-4">{i + 1}.</span>
-                    <span className="font-mono text-sm">{entry.player.slice(0,6)}...{entry.player.slice(-4)}</span>
+                <div key={i} className="flex justify-between items-center p-3 rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-colors">
+                  <div className="flex items-center gap-4">
+                    <span className="text-muted-foreground text-sm font-bold w-6 text-center">{medal || `${i + 1}.`}</span>
+                    <span className="font-mono text-sm tracking-wider text-muted-foreground">{entry.player.slice(0,6)}...{entry.player.slice(-4)}</span>
                   </div>
-                  <span className="font-bold text-primary">{Number(entry.score)}</span>
+                  <span className="font-bold text-primary text-lg drop-shadow-[0_0_8px_rgba(var(--primary),0.6)]">{Number(entry.score)}</span>
                 </div>
               );
             })}
             {(!topScores || (topScores as any[])[0]?.score === 0n) && (
-              <p className="text-muted-foreground text-sm text-center py-6 border border-dashed rounded-lg border-border/50">
+              <p className="text-muted-foreground text-sm text-center py-8 border border-dashed rounded-xl border-white/10 bg-white/5">
                 No scores yet. Be the first to conquer the bears!
               </p>
             )}
