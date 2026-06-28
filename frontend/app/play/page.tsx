@@ -38,23 +38,34 @@ export default function PlayPage() {
 
   const submitScore = async () => {
     if (!isConnected) {
-      toast({ title: "Please connect wallet", variant: "destructive" });
+      toast({ title: "Wallet Connected nahi hai", description: "Pehle wallet connect karein.", variant: "destructive" });
       return;
     }
-    if (score === 0) {
-      toast({ title: "Score is 0", description: "Play a game first!", variant: "destructive" });
+    if (score <= 0) {
+      toast({ title: "Score 0 hai!", description: "Pehle game khel kar kuch points banaein.", variant: "destructive" });
       return;
     }
     try {
-      const tx = await writeContractAsync({
+      toast({ title: "Transaction bhej raha hai...", description: "MetaMask mein confirm karein." });
+      await writeContractAsync({
         address: ARCSWAP_ADDRESS,
         abi: ARCSWAP_ABI,
         functionName: "submitHighScore",
         args: [BigInt(score)]
       });
-      toast({ title: "Score Submitted!", description: "Transaction is processing." });
+      toast({ title: "Score Submit Ho Gaya! 🏆", description: `Score ${score} leaderboard par save ho gaya.` });
+      refetch();
     } catch (e: any) {
-      toast({ title: "Error", description: e.message, variant: "destructive" });
+      const msg: string = e?.shortMessage || e?.message || "Unknown error";
+      if (msg.includes("User rejected") || msg.includes("user rejected")) {
+        toast({ title: "Transaction Cancel", description: "Aapne transaction reject kar di.", variant: "destructive" });
+      } else if (msg.includes("InvalidAmount") || msg.includes("score == 0")) {
+        toast({ title: "Score Invalid", description: "Score 0 se zyada hona chahiye.", variant: "destructive" });
+      } else if (msg.includes("insufficient funds") || msg.includes("gas")) {
+        toast({ title: "Insufficient Gas", description: "Wallet mein testnet USDC (gas) ki zaroorat hai. Faucet se claim karein.", variant: "destructive" });
+      } else {
+        toast({ title: "Error", description: msg.slice(0, 120), variant: "destructive" });
+      }
     }
   };
 
