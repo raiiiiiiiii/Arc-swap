@@ -241,16 +241,26 @@ export default function PlayPage() {
 
         {/* Leaderboard Section */}
         <div className="w-full max-w-md bg-black/40 backdrop-blur-xl rounded-3xl p-6 border border-white/10 shadow-[0_0_30px_rgba(0,0,0,0.3)]">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-xl font-bold flex items-center gap-2">
-              <Trophy className="text-amber-500 w-5 h-5 drop-shadow-[0_0_5px_rgba(245,158,11,0.8)]" /> Global Top 10
-            </h3>
+          {/* Leaderboard Header */}
+          <div className="flex items-center justify-between mb-6 pb-4 border-b border-white/10">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-primary/20 rounded-xl">
+                <Trophy className="w-5 h-5 text-primary" />
+              </div>
+              <div>
+                <h3 className="font-bold text-foreground font-space-grotesk text-lg">Global Top 50</h3>
+                <p className="text-xs text-muted-foreground">Hall of Fame</p>
+              </div>
+            </div>
             {myHighScore !== undefined && (
-              <span className="text-sm text-muted-foreground bg-white/5 px-3 py-1 rounded-full border border-white/10">My Best: <strong className="text-primary">{Number(myHighScore)}</strong></span>
+              <div className="text-right">
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Your Best</p>
+                <p className="font-bold text-primary font-space-grotesk">{Number(myHighScore)}</p>
+              </div>
             )}
           </div>
           
-          <div className="space-y-3">
+          <div className="space-y-3 max-h-[350px] overflow-y-auto pr-2 custom-scrollbar">
             {topScores ? (topScores as unknown as any[]).map((entry: any, i: number) => {
               if (Number(entry.score) === 0) return null;
               

@@ -65,7 +65,7 @@ contract ArcSwap is Ownable, AccessControl, ReentrancyGuard, Pausable {
         uint256 score;
     }
     mapping(address => uint256) public highScores;
-    PlayerScore[10] public topScores;
+    PlayerScore[50] public topScores;
 
     // ─── Custom Errors ───────────────────────────────────────────────────────
     error InvalidToken(address token);
@@ -399,11 +399,11 @@ contract ArcSwap is Ownable, AccessControl, ReentrancyGuard, Pausable {
             highScores[msg.sender] = score;
         }
 
-        // Insert into Top 10 if applicable
-        for (uint256 i = 0; i < 10; i++) {
+        // Insert into Top 50 if applicable
+        for (uint256 i = 0; i < 50; i++) {
             if (score > topScores[i].score) {
                 // Shift remaining scores down
-                for (uint256 j = 9; j > i; j--) {
+                for (uint256 j = 49; j > i; j--) {
                     topScores[j] = topScores[j - 1];
                 }
                 topScores[i] = PlayerScore(msg.sender, score);
@@ -414,7 +414,7 @@ contract ArcSwap is Ownable, AccessControl, ReentrancyGuard, Pausable {
         emit HighScoreSubmitted(msg.sender, score);
     }
 
-    function getTopScores() external view returns (PlayerScore[10] memory) {
+    function getTopScores() external view returns (PlayerScore[50] memory) {
         return topScores;
     }
 

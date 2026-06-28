@@ -24,7 +24,7 @@ export const ARCSWAP_ABI = parseAbi([
   
   // ── Leaderboard ───────────────────────────────────────────────────────────
   "function submitHighScore(uint256 score) external",
-  "function getTopScores() external view returns ((address player, uint256 score)[10])",
+  "function getTopScores() external view returns ((address player, uint256 score)[50])",
   "function highScores(address) external view returns (uint256)",
 
   // ── Admin ─────────────────────────────────────────────────────────────────
