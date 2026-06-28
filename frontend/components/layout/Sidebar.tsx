@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowLeftRight, ShieldCheck, Droplets, ExternalLink, Activity, Waves } from "lucide-react";
+import { ArrowLeftRight, ShieldCheck, Droplets, ExternalLink, Activity, Waves, Gamepad2 } from "lucide-react";
 import Image from "next/image";
 
 export function Sidebar({ className }: { className?: string }) {
@@ -44,6 +44,18 @@ export function Sidebar({ className }: { className?: string }) {
           >
             <Waves className="w-4 h-4" />
             <span>Liquidity Pools</span>
+          </Link>
+
+          <Link
+            href="/play"
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+              pathname === "/play"
+                ? "bg-primary text-primary-foreground shadow-md"
+                : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+            }`}
+          >
+            <Gamepad2 className="w-4 h-4 text-purple-400" />
+            <span className="text-purple-400 group-hover:text-purple-300">Mini Game</span>
           </Link>
 
           <Link
