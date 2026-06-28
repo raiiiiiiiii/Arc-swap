@@ -191,7 +191,7 @@ export default function PlayPage() {
                   className="font-bold border-primary text-primary hover:bg-primary/10 rounded-full h-12 flex items-center gap-2"
                 >
                   <Upload className="w-4 h-4" />
-                  {isPending ? "Submitting..." : "Submit to Web3"}
+                  {isPending ? "Submitting..." : "Submit Score"}
                 </Button>
               </div>
             </div>
