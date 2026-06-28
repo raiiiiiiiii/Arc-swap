@@ -38,31 +38,31 @@ export default function PlayPage() {
 
   const submitScore = async () => {
     if (!isConnected) {
-      toast({ title: "Wallet Connected nahi hai", description: "Pehle wallet connect karein.", variant: "destructive" });
+      toast({ title: "Wallet not connected", description: "Please connect your wallet first.", variant: "destructive" });
       return;
     }
     if (score <= 0) {
-      toast({ title: "Score 0 hai!", description: "Pehle game khel kar kuch points banaein.", variant: "destructive" });
+      toast({ title: "Score is 0!", description: "Play the game first to earn some points.", variant: "destructive" });
       return;
     }
     try {
-      toast({ title: "Transaction bhej raha hai...", description: "MetaMask mein confirm karein." });
+      toast({ title: "Confirm in MetaMask", description: "Please approve the transaction in your wallet." });
       await writeContractAsync({
         address: ARCSWAP_ADDRESS,
         abi: ARCSWAP_ABI,
         functionName: "submitHighScore",
         args: [BigInt(score)]
       });
-      toast({ title: "Score Submit Ho Gaya! 🏆", description: `Score ${score} leaderboard par save ho gaya.` });
+      toast({ title: "Score Saved! 🏆", description: `Your score of ${score} has been saved to the leaderboard.` });
       refetch();
     } catch (e: any) {
       const msg: string = e?.shortMessage || e?.message || "Unknown error";
       if (msg.includes("User rejected") || msg.includes("user rejected")) {
-        toast({ title: "Transaction Cancel", description: "Aapne transaction reject kar di.", variant: "destructive" });
+        toast({ title: "Transaction Cancelled", description: "You rejected the transaction.", variant: "destructive" });
       } else if (msg.includes("InvalidAmount") || msg.includes("score == 0")) {
-        toast({ title: "Score Invalid", description: "Score 0 se zyada hona chahiye.", variant: "destructive" });
+        toast({ title: "Invalid Score", description: "Score must be greater than 0.", variant: "destructive" });
       } else if (msg.includes("insufficient funds") || msg.includes("gas")) {
-        toast({ title: "Insufficient Gas", description: "Wallet mein testnet USDC (gas) ki zaroorat hai. Faucet se claim karein.", variant: "destructive" });
+        toast({ title: "Insufficient Gas", description: "You need testnet USDC for gas. Claim from the faucet.", variant: "destructive" });
       } else {
         toast({ title: "Error", description: msg.slice(0, 120), variant: "destructive" });
       }
