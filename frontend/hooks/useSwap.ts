@@ -73,11 +73,11 @@ export function useSwap() {
   const dailySwapLimit = dailySwapLimitRaw ? Number(dailySwapLimitRaw) : 3;
 
   return {
-    reserves: reserves ? { usdc: reserves[0], eurc: reserves[1] } : null,
+    reserves: reserves ? { usdc: (reserves as readonly [bigint, bigint])[0], eurc: (reserves as readonly [bigint, bigint])[1] } : null,
     userSwapInfo: userSwapInfo ? {
-      used: Number(userSwapInfo[0]),
-      remaining: Number(userSwapInfo[1]),
-      nextReset: Number(userSwapInfo[2])
+      used: Number((userSwapInfo as readonly [bigint, bigint, bigint])[0]),
+      remaining: Number((userSwapInfo as readonly [bigint, bigint, bigint])[1]),
+      nextReset: Number((userSwapInfo as readonly [bigint, bigint, bigint])[2])
     } : null,
     maxSwapAmount,
     dailySwapLimit,

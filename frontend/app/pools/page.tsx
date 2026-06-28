@@ -80,17 +80,19 @@ export default function PoolsPage() {
   });
 
   // ── Derived values ─────────────────────────────────────────────────────────
-  const usdcReserve = poolStats?.[0] ?? 0n;
-  const eurcReserve = poolStats?.[1] ?? 0n;
-  const totalLpUSDC = poolStats?.[2] ?? 0n;
-  const totalLpEURC = poolStats?.[3] ?? 0n;
-  const totalLpProviders = poolStats?.[4] ?? 0n;
+  const stats = poolStats as readonly [bigint, bigint, bigint, bigint, bigint] | undefined;
+  const usdcReserve = stats?.[0] ?? 0n;
+  const eurcReserve = stats?.[1] ?? 0n;
+  const totalLpUSDC = stats?.[2] ?? 0n;
+  const totalLpEURC = stats?.[3] ?? 0n;
+  const totalLpProviders = stats?.[4] ?? 0n;
   const tvl = usdcReserve + eurcReserve;
   const usdcPct = pct(usdcReserve, eurcReserve);
   const eurcPct = 100 - usdcPct;
 
-  const myUsdcLp = lpBalance?.[0] ?? 0n;
-  const myEurcLp = lpBalance?.[1] ?? 0n;
+  const lp = lpBalance as readonly [bigint, bigint] | undefined;
+  const myUsdcLp = lp?.[0] ?? 0n;
+  const myEurcLp = lp?.[1] ?? 0n;
   const hasMyLp = myUsdcLp > 0n || myEurcLp > 0n;
 
   const parsedDeposit = parseDecimals(depositAmount);

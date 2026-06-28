@@ -20,8 +20,9 @@ export function StatusBar() {
     query: { refetchInterval: 15000 }
   });
 
-  const totalSwaps = swapStats ? Number(swapStats[0]).toLocaleString() : "—";
-  const uniqueUsers = swapStats ? Number(swapStats[1]).toLocaleString() : "—";
+  const stats = swapStats as readonly [bigint, bigint] | undefined;
+  const totalSwaps = stats ? Number(stats[0]).toLocaleString() : "—";
+  const uniqueUsers = stats ? Number(stats[1]).toLocaleString() : "—";
 
   useEffect(() => {
     if (!publicClient) return;

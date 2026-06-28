@@ -240,7 +240,7 @@ export default function PlayPage() {
           </div>
           
           <div className="space-y-3">
-            {topScores && (topScores as any[]).map((entry: any, i: number) => {
+            {topScores ? (topScores as unknown as any[]).map((entry: any, i: number) => {
               if (Number(entry.score) === 0) return null;
               
               let medal = "";
@@ -257,8 +257,8 @@ export default function PlayPage() {
                   <span className="font-bold text-primary text-lg drop-shadow-[0_0_8px_rgba(var(--primary),0.6)]">{Number(entry.score)}</span>
                 </div>
               );
-            })}
-            {(!topScores || (topScores as any[])[0]?.score === 0n) && (
+            }) : null}
+            {(!topScores || (topScores as unknown as any[])[0]?.score === 0n) && (
               <p className="text-muted-foreground text-sm text-center py-8 border border-dashed rounded-xl border-white/10 bg-white/5">
                 No scores yet. Be the first to conquer the bears!
               </p>

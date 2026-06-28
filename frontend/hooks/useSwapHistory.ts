@@ -210,7 +210,7 @@ export function useSwapHistory(filterByUser: boolean = true) {
     abi: ARCSWAP_ABI,
     eventName: "Swapped",
     onLogs(logs) {
-      const newEvents: SwapEvent[] = logs.map(log => {
+      const newEvents: SwapEvent[] = (logs as any[]).map((log: any) => {
         const args = log.args as any;
         const isUsdcIn = args.tokenIn.toLowerCase() === TOKENS.USDC.address.toLowerCase();
         return {
